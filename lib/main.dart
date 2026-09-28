@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/pages/counter_page.dart';
+import 'package:pokedex/pages/home.dart';
 
 void main() {
  runApp(const MyApp());
