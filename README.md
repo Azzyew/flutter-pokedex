@@ -1,6 +1,6 @@
 # pokedex
 
-My first Flutter project! This is a personal project for me to learn and practice Flutter/Dart
+My first Flutter project! This is a personal project for me to learn and practice Flutter/Dart. The UI/design is NOT the focus, I am coding this to understand Flutter's syntax, lifecycle, etc... This app doesn't have the purpose of looking pretty or being marketable.
 
 ## Pokédex features to-do
 
