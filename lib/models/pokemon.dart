@@ -22,3 +22,13 @@ class Pokemon {
     );
   }
 }
+
+class PokemonPage {
+  final List<Pokemon> pokemon;
+  final String? next;
+
+  const PokemonPage({
+    required this.pokemon,
+    required this.next
+  });
+}
