@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/models/pokemon.dart';
-import 'package:pokedex/utils/string.dart';
+import 'package:pokedex/extensions/string.dart';
 
 class PokemonOfTheDay extends StatelessWidget {
   final Pokemon pokemon;

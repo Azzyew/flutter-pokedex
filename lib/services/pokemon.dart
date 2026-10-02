@@ -7,7 +7,6 @@ class PokemonService {
   final String _baseUrl = 'https://pokeapi.co/api/v2/pokemon';
   final String firstPokemonRequest = 'https://pokeapi.co/api/v2/pokemon?limit=20&offset=0';
 
-
   Future<Pokemon> getPokemon(int id) async {
     final response = await http.get(
       Uri.parse('$_baseUrl/$id'),
