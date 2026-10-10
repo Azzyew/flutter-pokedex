@@ -16,6 +16,7 @@ class PokemonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> typeUrls = [];
+    var generation = Generation.fromPokemonId(pokemon.id);
 
     for (var type in pokemon.types) {
       String currentLogoUrl = getTypeSpriteUrl(
@@ -27,12 +28,27 @@ class PokemonCard extends StatelessWidget {
     }
 
     return Card.outlined(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: generationColor[generation]!,
+        )
+      ),
       child: Column(
         children: [
+          Text(
+            '#${pokemon.id.toString().padLeft(4, '0')}',
+            style: TextStyle(color: generationColor[generation]),
+          ),
           Image.network(pokemon.sprite),
           Text(pokemon.name.capitalize()),
-          // Text(pokemon.types.join('/'))
-          TypeRow(imageUrls: typeUrls)
+          Row(
+            children: [
+              TypeRow(imageUrls: typeUrls),
+              Text('H: ${pokemon.height}'),
+              Text('W: ${pokemon.weight}'),
+            ],
+          )
         ],
       )
     );
