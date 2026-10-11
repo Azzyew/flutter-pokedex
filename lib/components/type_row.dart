@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex/extensions/string.dart';
 
 class TypeRow extends StatelessWidget {
-  final List<String> imageUrls;
+  final String imageUrl;
+  final String typeName;
 
   const TypeRow({
     super.key,
-    required this.imageUrls
+    required this.imageUrl,
+    required this.typeName
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: imageUrls.map((url) {
-      return Image.network(
-        url,
-        height: 25,
-        width: 25,
-        fit: BoxFit.cover,
-      );
-    }).toList(),
+      children: [
+        Image.network(
+          imageUrl,
+          height: 25,
+          width: 25,
+          fit: BoxFit.cover,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 4),
+          child: Text(typeName.capitalize()),
+        )
+      ]
     );
   }
 }

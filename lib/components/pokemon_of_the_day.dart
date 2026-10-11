@@ -15,17 +15,17 @@ class PokemonOfTheDay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> typeUrls = [];
     var generation = Generation.fromPokemonId(pokemon.id);
 
-    for (var type in pokemon.types) {
-      String currentLogoUrl = getTypeSpriteUrl(
-        pokemonTypesMap[type]!,
-        TypeLogoSize.small,
+    final formattedTypes = pokemon.types.map((type) {
+      return PokemonType(
+        name: type,
+        imageUrl: getTypeSpriteUrl(
+          pokemonTypesMap[type]!,
+          TypeLogoSize.small,
+        ),
       );
-
-      typeUrls.add(currentLogoUrl);
-    }
+    });
     return Card.outlined(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -43,9 +43,14 @@ class PokemonOfTheDay extends StatelessWidget {
             children: [
               Image.network(pokemon.sprite),
               Text(pokemon.name.capitalize()),
-              TypeRow(imageUrls: typeUrls),
-              Text('H: ${pokemon.height}'),
-              Text('W: ${pokemon.weight}'),
+    
+              Column(
+                children: formattedTypes.map((type) {
+                  return TypeRow(typeName: type.name, imageUrl: type.imageUrl);
+                }).toList()
+              ),
+              Text(formatPokemonHeight(pokemon.height)),
+              Text(formatPokemonWeight(pokemon.weight)),
             ],
           )
         ],

@@ -29,6 +29,16 @@ class Pokemon {
   }
 }
 
+class PokemonType {
+  final String name;
+  final String imageUrl;
+
+  const PokemonType({
+    required this.name,
+    required this.imageUrl
+  });
+}
+
 class PokemonPage {
   final List<Pokemon> pokemon;
   final String? next;

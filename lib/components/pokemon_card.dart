@@ -15,17 +15,18 @@ class PokemonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> typeUrls = [];
     var generation = Generation.fromPokemonId(pokemon.id);
 
-    for (var type in pokemon.types) {
-      String currentLogoUrl = getTypeSpriteUrl(
-        pokemonTypesMap[type]!,
-        TypeLogoSize.small,
-      );
 
-      typeUrls.add(currentLogoUrl);
-    }
+    final formattedTypes = pokemon.types.map((type) {
+      return PokemonType(
+        name: type,
+        imageUrl: getTypeSpriteUrl(
+          pokemonTypesMap[type]!,
+          TypeLogoSize.small,
+        ),
+      );
+    });
 
     return Card.outlined(
       shape: RoundedRectangleBorder(
@@ -44,9 +45,17 @@ class PokemonCard extends StatelessWidget {
           Text(pokemon.name.capitalize()),
           Row(
             children: [
-              TypeRow(imageUrls: typeUrls),
-              Text('H: ${pokemon.height}'),
-              Text('W: ${pokemon.weight}'),
+              Column(
+                children: formattedTypes.map((type) {
+                  return TypeRow(typeName: type.name, imageUrl: type.imageUrl);
+                }).toList()
+              ),
+              Column(
+                children: [
+                  Text(formatPokemonHeight(pokemon.height)),
+                  Text(formatPokemonWeight(pokemon.weight)),
+                ],
+              )
             ],
           )
         ],
