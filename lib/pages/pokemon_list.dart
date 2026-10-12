@@ -57,8 +57,9 @@ class _PokemonListState extends State<PokemonList> {
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+          mainAxisExtent: 220
         ),
         itemCount: controller.pokemons.length,
         itemBuilder: (context, index) {

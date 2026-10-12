@@ -23,7 +23,10 @@ class TypeRow extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.only(left: 4),
-          child: Text(typeName.capitalize()),
+          child: Text(
+            typeName.capitalize(),
+            style: TextStyle(color: Colors.grey[900], fontSize: 13),
+          ),
         )
       ]
     );
