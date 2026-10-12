@@ -15,10 +15,10 @@ class BottomNav extends StatelessWidget {
         indicatorColor: Colors.white,
         tabs: [
           Tab(
-            icon: Icon(Icons.home),
+            icon: const Icon(Icons.home),
           ),
           Tab(
-            icon: Icon(Icons.list_alt),
+            icon: const Icon(Icons.list_alt),
           )
         ]
       ),

@@ -82,7 +82,7 @@ class PokemonCard extends StatelessWidget {
                         typeName: formattedTypes[i].name
                       ),
                       if (i < formattedTypes.length - 1)
-                        SizedBox(height: 4)
+                        const SizedBox(height: 4)
                     ]
                   ]
                 ),
@@ -101,11 +101,11 @@ class PokemonCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       children: [
                         Icon(Icons.scale, size: 16, color: Colors.grey[600]),
-                        SizedBox(width: 2),
+                        const SizedBox(width: 2),
                         Text(
                           formatPokemonWeight(pokemon.weight),
                           style: TextStyle(
