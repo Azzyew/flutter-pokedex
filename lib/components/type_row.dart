@@ -22,7 +22,7 @@ class TypeRow extends StatelessWidget {
           fit: BoxFit.cover,
         ),
         Padding(
-          padding: EdgeInsets.only(left: 4),
+          padding: const EdgeInsets.only(left: 4),
           child: Text(
             typeName.capitalize(),
             style: TextStyle(color: Colors.grey[900], fontSize: 13),

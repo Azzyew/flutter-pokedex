@@ -11,7 +11,7 @@ class BottomNav extends StatelessWidget {
         labelColor: Colors.grey[200],
         unselectedLabelColor: Colors.white70,
         indicatorSize: TabBarIndicatorSize.label,
-        indicatorPadding: EdgeInsets.all(5),
+        indicatorPadding: const EdgeInsets.all(5),
         indicatorColor: Colors.white,
         tabs: [
           Tab(

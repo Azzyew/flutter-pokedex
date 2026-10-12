@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/components/pokemon_card.dart';
 import 'package:pokedex/controllers/pokemon_list.dart';
 import 'package:pokedex/services/pokemon.dart';
+import 'package:pokedex/utils/constants.dart';
 
 class PokemonList extends StatefulWidget {
   const new({super.key});
@@ -13,7 +14,8 @@ class PokemonList extends StatefulWidget {
 class _PokemonListState extends State<PokemonList> {
   late final PokemonListController controller;
 
-  final ScrollController scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   final int _pixelsBeforeMaxScroll = 30;
 
@@ -23,7 +25,7 @@ class _PokemonListState extends State<PokemonList> {
 
     controller = PokemonListController(pokemonService: PokemonService());
 
-    scrollController.addListener(_onScroll);
+    _scrollController.addListener(_onScroll);
 
     loadPokemons();
   }
@@ -37,36 +39,78 @@ class _PokemonListState extends State<PokemonList> {
   }
 
   void _onScroll() {
-    if (scrollController.position.pixels >=
-        scrollController.position.maxScrollExtent - _pixelsBeforeMaxScroll) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - _pixelsBeforeMaxScroll) {
       loadPokemons();
     }
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
+    _scrollController.dispose();
+    _searchController.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GridView.builder(
-        controller: scrollController,
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
-          mainAxisExtent: 220
-        ),
-        itemCount: controller.pokemons.length,
-        itemBuilder: (context, index) {
-          final pokemon = controller.pokemons[index];
+    String pokemonSearchText = _searchController.text.trim().toLowerCase();
 
-          return PokemonCard(pokemon: pokemon);
-        }),
+    final filteredPokemons = controller.pokemons.where((pokemon) {
+      return pokemon.name.toLowerCase().contains(pokemonSearchText);
+    }).toList();
+
+    final textFieldBorderColor = filteredPokemons.isNotEmpty ?
+      generationColor[Generation.fromPokemonId(filteredPokemons[0].id)]! : Colors.grey[800]!;
+
+    return Scaffold(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 18, right: 18, top: 14),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (_) {
+                setState(() {});
+              },
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: textFieldBorderColor
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: textFieldBorderColor
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+                labelText: 'Enter a Pokémon',
+                prefixIcon: Icon(Icons.search)
+              ),
+            ),
+          ),
+          Expanded(
+            child: GridView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                mainAxisExtent: 220
+              ),
+              itemCount: filteredPokemons.length,
+              itemBuilder: (context, index) {
+                final pokemon = filteredPokemons[index];
+            
+                return PokemonCard(pokemon: pokemon);
+              }),
+          ),
+        ],
+      ),
     );
   }
 }
