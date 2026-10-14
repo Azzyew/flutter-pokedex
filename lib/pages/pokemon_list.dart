@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:pokedex/components/pokemon_card.dart';
 import 'package:pokedex/controllers/pokemon_list.dart';
@@ -19,6 +22,10 @@ class _PokemonListState extends State<PokemonList> {
 
   final int _pixelsBeforeMaxScroll = 30;
 
+  Timer? _pokemonSearchDebounce;
+  String _pokemonSearchText = '';
+  int _searchRequestId = 0;
+
   @override
   void initState() {
     super.initState();
@@ -28,10 +35,19 @@ class _PokemonListState extends State<PokemonList> {
     _scrollController.addListener(_onScroll);
 
     loadPokemons();
+    _loadPokemonNames();
   }
 
   Future<void> loadPokemons() async {
     await controller.loadPokemons();
+
+    if (!mounted) return;
+
+    setState(() {});
+  }
+
+  Future<void> _loadPokemonNames() async {
+    await controller.loadPokemonNames();
 
     if (!mounted) return;
 
@@ -45,8 +61,58 @@ class _PokemonListState extends State<PokemonList> {
     }
   }
 
+  void _onSearchChanged(String searchString) {
+    _pokemonSearchDebounce?.cancel();
+
+    setState(() {
+      _pokemonSearchText = searchString.trim().toLowerCase();
+    });
+
+    if (_pokemonSearchText.isEmpty) {
+      setState(() {
+        controller.searchResults = [];
+      });
+
+      return;
+    }
+
+    _pokemonSearchDebounce = Timer(
+      const Duration(milliseconds: 300),
+      () async {
+        final requestId = ++_searchRequestId;
+        final query = _pokemonSearchText;
+
+        setState(() {
+          controller.isSearchingFullDetails = true;
+        });
+
+        try {
+          await controller.searchPokemons(query);
+
+          if (!mounted || requestId != _searchRequestId) {
+            return;
+          }
+
+          setState(() {});
+        } catch (err) {
+          if (!mounted || requestId != _searchRequestId) {
+            return;
+          }
+
+          log(err.toString());
+        } finally {
+          if (mounted || requestId == _searchRequestId) {
+            setState(() {
+              controller.isSearchingFullDetails = false;
+            });
+          }
+        }
+      });
+  }
+
   @override
   void dispose() {
+    _pokemonSearchDebounce?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
 
@@ -55,14 +121,18 @@ class _PokemonListState extends State<PokemonList> {
 
   @override
   Widget build(BuildContext context) {
-    String pokemonSearchText = _searchController.text.trim().toLowerCase();
+    // String pokemonSearchText = _searchController.text.trim().toLowerCase();
 
-    final filteredPokemons = controller.pokemons.where((pokemon) {
-      return pokemon.name.toLowerCase().contains(pokemonSearchText);
-    }).toList();
+    final isSearchActive = _pokemonSearchText.isNotEmpty;
 
-    final textFieldBorderColor = filteredPokemons.isNotEmpty ?
-      generationColor[Generation.fromPokemonId(filteredPokemons[0].id)]! : Colors.grey[800]!;
+    final displayedPokemon = isSearchActive ? controller.searchResults : controller.pokemons;
+
+    // final filteredPokemons = controller.allPokemonNames.where((pokemon) {
+    //   return pokemon.toLowerCase().contains(pokemonSearchText);
+    // }).toList();
+
+    final textFieldBorderColor = displayedPokemon.isNotEmpty ?
+      generationColor[Generation.fromPokemonId(displayedPokemon[0].id)]! : Colors.grey[800]!;
 
     return Scaffold(
       body: Column(
@@ -71,9 +141,7 @@ class _PokemonListState extends State<PokemonList> {
             padding: const EdgeInsets.only(left: 18, right: 18, top: 14),
             child: TextField(
               controller: _searchController,
-              onChanged: (_) {
-                setState(() {});
-              },
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -93,8 +161,18 @@ class _PokemonListState extends State<PokemonList> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              controller: _scrollController,
+            child: controller.isSearchingFullDetails ?
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+              : displayedPokemon.isEmpty
+                ? Center(
+                  child: Text(
+                    isSearchActive ? 'No Pokémon found :(' : 'Loading...'
+                  ),
+                ) :
+            GridView.builder(
+              controller: isSearchActive ? null : _scrollController,
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -102,9 +180,9 @@ class _PokemonListState extends State<PokemonList> {
                 mainAxisSpacing: 14,
                 mainAxisExtent: 220
               ),
-              itemCount: filteredPokemons.length,
+              itemCount: displayedPokemon.length,
               itemBuilder: (context, index) {
-                final pokemon = filteredPokemons[index];
+                final pokemon = displayedPokemon[index];
             
                 return PokemonCard(pokemon: pokemon);
               }),

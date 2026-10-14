@@ -15,6 +15,6 @@ class HomeController {
     final pokemonId =
         today.difference(firstDayOfTheYear).inDays + 1;
 
-    return pokemonService.getPokemon(pokemonId);
+    return pokemonService.getPokemonById(pokemonId);
   }
 }
